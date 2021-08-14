@@ -1,0 +1,71 @@
+﻿@page "/Config/AddProducts"
+@using System.IO
+<h3>Add Products</h3>
+<EditForm Model="@producto" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <div class="form-horizontal">
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Nombre:</label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" @bind="producto.Nombre" placeholder="Ingrese el nombre del producto" />
+                <ValidationMessage For="@(() => producto.Nombre)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Precio:</label>
+            <div class="col-md-10">
+                <input type="number" class="form-control" @bind="producto.Precio" placeholder="Ingrese el precio" />
+                <ValidationMessage For="@(() => producto.Precio)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Categoria:</label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" @bind="producto.Categoria" placeholder="Ingrese la Categoria" />
+                <ValidationMessage For="@(() => producto.Categoria)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Cantidad:</label>
+            <div class="col-md-10">
+                <input type="number" class="form-control" @bind="producto.Cantidad" />
+                <ValidationMessage For="@(() => producto.Cantidad)" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Imagen:</label>
+            <div class="col-md-10">
+                <input type="file" accept=".jpg, .jpeg, .png" class="form-control" @bind="image" />
+                <ValidationMessage For="@(() => producto.Imagen)" />
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-success">
+                    <i class="oi oi-plus"> Agragar Producto</i>
+                </button>
+                <a class="btn btn-primary" href="/Config/ListProduct">Regresar a la lista</a>
+            </div>
+        </div>
+    </div>
+</EditForm>
+<label>@image</label>
+
+@code {
+    private Producto producto = new Producto();
+    FileStream stream;
+    string image = "";
+    protected async Task Save()
+    {
+        //await ProductsService.InsertProduct(producto);
+        NavigationManager.NavigateTo("/Config/ListProduct");
+        stream = new FileStream(image, FileMode.Open, FileAccess.Read);
+    }
+}
