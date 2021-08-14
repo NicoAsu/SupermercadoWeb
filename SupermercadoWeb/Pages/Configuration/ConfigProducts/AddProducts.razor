@@ -1,6 +1,6 @@
 ﻿@page "/Config/AddProducts"
-@using System.IO
 <h3>Add Products</h3>
+
 <EditForm Model="@producto" OnValidSubmit="Save">
     <DataAnnotationsValidator />
     <div class="form-horizontal">
@@ -24,8 +24,14 @@
         <div class="form-group">
             <label class="control-label col-md-2">Categoria:</label>
             <div class="col-md-10">
-                <input type="text" class="form-control" @bind="producto.Categoria" placeholder="Ingrese la Categoria" />
-                <ValidationMessage For="@(() => producto.Categoria)" />
+                <input type="text" class="form-control" placeholder="Ingrese la Categoria" />
+                <select>
+                    <option value="" selected="selected" disabled="disabled">-- Selecciona una cateogria --</option>
+                    @foreach(var categoria in categorias)
+                    {
+                        <option value="@categoria.Id">@categoria.Nombre</option>
+                    }
+                </select>
             </div>
         </div>
 
@@ -40,12 +46,14 @@
         <div class="form-group">
             <label class="control-label col-md-2">Imagen:</label>
             <div class="col-md-10">
-                <input type="file" accept=".jpg, .jpeg, .png" class="form-control" @bind="image" />
-                <ValidationMessage For="@(() => producto.Imagen)" />
+                <InputFile accept="png, jpeg, jpg"OnChange="HandleFileSelected"></InputFile>
             </div>
         </div>
 
-
+        @if(imageUrl != null)
+        {
+            <img src="@imageUrl">
+        }
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-success">
@@ -56,16 +64,35 @@
         </div>
     </div>
 </EditForm>
-<label>@image</label>
+
 
 @code {
     private Producto producto = new Producto();
+    List<Categoria> categorias = new List<Categoria>();
     FileStream stream;
-    string image = "";
+    string imageUrl = null;
+    async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var imagenFile = e.GetMultipleFiles().FirstOrDefault();
+        string format = "image/jpg";
+        if (imagenFile != null)
+        {
+            var resized = await imagenFile.RequestImageFileAsync(format, 100, 100);
+            var buffer = new Byte[resized.Size];
+            await resized.OpenReadStream().ReadAsync(buffer);
+            producto.Imagen = buffer;
+            imageUrl = $"data:image / jpg; base64,{Convert.ToBase64String(buffer)}";
+        }
+    }
+    protected override void OnInitialized()
+    {
+        categorias = dbContext.Categorias.ToList();
+    }
     protected async Task Save()
     {
-        //await ProductsService.InsertProduct(producto);
+        /*await ProductsService.InsertProduct(producto);
         NavigationManager.NavigateTo("/Config/ListProduct");
-        stream = new FileStream(image, FileMode.Open, FileAccess.Read);
+        stream = new FileStream(image, FileMode.Open, FileAccess.Read); */
+        await dbContext.Productos.AddAsync(producto);
     }
 }
