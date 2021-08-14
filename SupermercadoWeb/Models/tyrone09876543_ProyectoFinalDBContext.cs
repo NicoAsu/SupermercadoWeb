@@ -25,6 +25,7 @@ namespace SupermercadoWeb.Models
         public virtual DbSet<AspNetUserRole> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
         public virtual DbSet<Carrito> Carritos { get; set; }
+        public virtual DbSet<Categoria> Categorias { get; set; }
         public virtual DbSet<Pedido> Pedidos { get; set; }
         public virtual DbSet<Producto> Productos { get; set; }
         public virtual DbSet<Slider> Sliders { get; set; }
@@ -33,7 +34,7 @@ namespace SupermercadoWeb.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
- //To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer("Server=sql.bsite.net\\MSSQL2016;Database=tyrone09876543_ProyectoFinalDB;User Id=tyrone09876543_ProyectoFinalDB;Password=12345");
             }
         }
@@ -141,11 +142,16 @@ namespace SupermercadoWeb.Models
             {
                 entity.ToTable("Carrito");
 
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
                 entity.Property(e => e.UserId)
                     .IsRequired()
                     .HasMaxLength(450);
+            });
+
+            modelBuilder.Entity<Categoria>(entity =>
+            {
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Pedido>(entity =>
@@ -178,26 +184,16 @@ namespace SupermercadoWeb.Models
 
             modelBuilder.Entity<Producto>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.Categoria)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsFixedLength(true);
-
                 entity.Property(e => e.Imagen).IsRequired();
 
                 entity.Property(e => e.Nombre)
                     .IsRequired()
-                    .HasMaxLength(50)
-                    .IsFixedLength(true);
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Slider>(entity =>
             {
                 entity.ToTable("Slider");
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.VideoUrl)
                     .HasMaxLength(200)

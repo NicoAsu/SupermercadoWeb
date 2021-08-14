@@ -10,8 +10,8 @@ namespace SupermercadoWeb.Models
         public int Id { get; set; }
         public string Nombre { get; set; }
         public double Precio { get; set; }
-        public string Categoria { get; set; }
         public int Cantidad { get; set; }
+        public int CategoriaId { get; set; }
         public byte[] Imagen { get; set; }
     }
 }
