@@ -8,7 +8,7 @@ else
 {
     <table class="table">
         <thead class="thead-dark">
-            <tr>
+            <tr style="text-align:center;">
                 <th scope="col">Nombre</th>
                 <th scope="col">Precio</th>
                 <th scope="col">Categoria</th>
@@ -20,12 +20,12 @@ else
         <tbody>
             @foreach (var producto in productos)
             {
-                <tr>
+                <tr style="text-align:center;">
                     <td>@producto.Nombre</td>
                     <td>@producto.Precio</td>
-                    
+                    <td>@producto.CategoriaId</td>
                     <td>@producto.Cantidad</td>
-                    <td><img src="@producto.Imagen" alt="Alternate Text" /></td>
+                    <td><img src="data:image/jpg; base64,@Convert.ToBase64String(producto.Imagen)" alt="Alternate Text" /></td>
                     <td>
                         <a href="/Config/EditProducts/@producto.Id" class="btn btn-primary btn-xs" title="Editar">
                             <i class="oi oi-pencil"></i>
@@ -42,9 +42,11 @@ else
 }
 @code {
     private IEnumerable<Producto> productos { get; set; }
-
+    List<Categoria> categorias;
     protected override async Task OnInitializedAsync()
     {
+
         productos = await ProductsService.GetAllProducts();
+        categorias = dbContext.Categorias.ToList();
     }
 }
