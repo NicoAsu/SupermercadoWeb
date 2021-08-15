@@ -1,7 +1,7 @@
-﻿@page "/Config/AddProducts"
-<h3>Add Products</h3>
+﻿@page "/Config/EditProducts/{id:int}"
+<h3>Editar Datos del Producto</h3>
 
-<EditForm Model="@producto" OnValidSubmit="Save">
+<EditForm Model="@producto" OnValidSubmit="Editar">
     <DataAnnotationsValidator />
     <div class="form-horizontal">
 
@@ -44,7 +44,7 @@
         </div>
 
         <div class="form-group">
-            <label class="control-label col-md-2">Imagen:</label>
+            <label class="control-label col-md-2">Marcar para editar Imagen: <InputCheckbox @bind-Value="check" /></label>
             <div class="col-md-10">
                 <InputFile accept="png, jpeg, jpg" OnChange="HandleFileSelected"></InputFile>
                 <ValidationMessage For="@(() => producto.Imagen)" />
@@ -53,13 +53,13 @@
             {
                 <img src="@imageUrl" width="200" height="200">
             }
+
         </div>
 
-        
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-success">
-                    <i class="oi oi-plus"> Agragar Producto</i>
+                    <i class="oi oi-plus"> Editar Producto</i>
                 </button>
                 <a class="btn btn-primary" href="/Config/ListProduct">Regresar a la lista</a>
             </div>
@@ -69,29 +69,46 @@
 
 
 @code {
+    [Parameter]
+    public int id { get; set; }
+
     private Producto producto = new Producto();
     List<Categoria> categorias = new List<Categoria>();
     string imageUrl = null;
+    bool check = false;
     async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
-        var imagenFile = e.GetMultipleFiles().FirstOrDefault();
-        string format = "image/jpg";
-        if (imagenFile != null)
+        if (check == true)
         {
-            var resized = await imagenFile.RequestImageFileAsync(format, 100, 100);
-            var buffer = new Byte[resized.Size];
-            await resized.OpenReadStream().ReadAsync(buffer);
-            producto.Imagen = buffer;
-            imageUrl = $"data:image/jpg; base64,{Convert.ToBase64String(buffer)}";
+            var imagenFile = e.GetMultipleFiles().FirstOrDefault();
+            string format = "image/jpg";
+            if (imagenFile != null)
+            {
+                var resized = await imagenFile.RequestImageFileAsync(format, 100, 100);
+                var buffer = new Byte[resized.Size];
+                await resized.OpenReadStream().ReadAsync(buffer);
+                producto.Imagen = buffer;
+                imageUrl = $"data:image/jpg; base64,{Convert.ToBase64String(buffer)}";
+            }
         }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        producto = await ProductsService.GetProduct(id);
+        imageUrl = $"data:image/jpg; base64,{Convert.ToBase64String(producto.Imagen)}";
     }
     protected override void OnInitialized()
     {
         categorias = dbContext.Categorias.ToList();
     }
-    protected async Task Save()
+    protected async Task Editar()
     {
-        await ProductsService.InsertProduct(producto);
+        await ProductsService.SaveProduct(producto);
         NavigationManager.NavigateTo("/Config/ListProduct");
+    }
+
+    private void EditFoto()
+    {
+        imageUrl = null;
     }
 }
