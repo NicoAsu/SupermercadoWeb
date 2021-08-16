@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -27,6 +27,7 @@ namespace SupermercadoWeb.Models
         public virtual DbSet<Carrito> Carritos { get; set; }
         public virtual DbSet<Categoria> Categorias { get; set; }
         public virtual DbSet<Pedido> Pedidos { get; set; }
+        public virtual DbSet<PedidosItem> PedidosItems { get; set; }
         public virtual DbSet<Producto> Productos { get; set; }
         public virtual DbSet<Slider> Sliders { get; set; }
 
@@ -74,6 +75,8 @@ namespace SupermercadoWeb.Models
                     .HasFilter("([NormalizedUserName] IS NOT NULL)");
 
                 entity.Property(e => e.Email).HasMaxLength(256);
+
+                entity.Property(e => e.Fnacimiento).HasColumnType("date");
 
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
@@ -156,8 +159,13 @@ namespace SupermercadoWeb.Models
 
             modelBuilder.Entity<Pedido>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
 
+            modelBuilder.Entity<Pedido>(entity =>
+            {
                 entity.Property(e => e.Comentario)
                     .HasMaxLength(200)
                     .IsFixedLength(true);
@@ -180,6 +188,15 @@ namespace SupermercadoWeb.Models
                 entity.Property(e => e.UserId)
                     .IsRequired()
                     .HasMaxLength(450);
+            });
+
+            modelBuilder.Entity<PedidosItem>(entity =>
+            {
+                entity.HasNoKey();
+                entity.Property(e => e.PrecioUnidad)
+                    .IsRequired()
+                    .HasMaxLength(10)
+                    .IsFixedLength(true);
             });
 
             modelBuilder.Entity<Producto>(entity =>
