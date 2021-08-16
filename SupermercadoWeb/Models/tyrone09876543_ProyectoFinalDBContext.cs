@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -35,7 +35,7 @@ namespace SupermercadoWeb.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-//warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
                 optionsBuilder.UseSqlServer("Server=sql.bsite.net\\MSSQL2016;Database=tyrone09876543_ProyectoFinalDB;User Id=tyrone09876543_ProyectoFinalDB;Password=12345");
             }
         }
@@ -159,6 +159,13 @@ namespace SupermercadoWeb.Models
 
             modelBuilder.Entity<Pedido>(entity =>
             {
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<Pedido>(entity =>
+            {
                 entity.Property(e => e.Comentario)
                     .HasMaxLength(200)
                     .IsFixedLength(true);
@@ -186,7 +193,6 @@ namespace SupermercadoWeb.Models
             modelBuilder.Entity<PedidosItem>(entity =>
             {
                 entity.HasNoKey();
-
                 entity.Property(e => e.PrecioUnidad)
                     .IsRequired()
                     .HasMaxLength(10)
