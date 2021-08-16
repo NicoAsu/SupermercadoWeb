@@ -1,0 +1,69 @@
+﻿@page "/Config/ListUsers"
+<h3>Lista de Usuarios</h3>
+@if (users == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead class="thead-dark">
+            <tr style="text-align:center;">
+                <th scope="col">Nombre</th>
+                <th scope="col">Email</th>
+                <th scope="col">Roles</th>
+                <th scope="col">Fecha Nacimiento</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr style="text-align:center;">
+                    <td>@user.UserName</td>
+                    <td>@user.Email</td>
+
+                    @*@foreach (var item in roles)
+                    {
+                        if (item.Id == user.AspNetUserRoles.)
+                        {
+                            <td>@item.Nombre</td>
+                        }
+
+                    }*@
+                    <td></td>
+                    <td>@user.Fnacimiento</td>
+                    <td>
+                        <a href="/Config/EditProducts/@user.Id" class="btn btn-primary btn-xs" title="Editar">
+                            <i class="oi oi-pencil"></i>
+                        </a>
+
+                        @*<a href="/Config/DeleteProducts/@producto.Id" class="btn btn-danger btn-xs" title="Eliminar">
+                                <i class="oi oi-trash"></i>
+                            </a>*@
+
+                        <button @onclick="() => Eliminar(user.Id)" class="btn btn-danger btn-xs" title="Eliminar">
+                            <i class="oi oi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private IEnumerable<AspNetUser> users { get; set; }
+    List<AspNetRole> roles;
+    List<string> segunda;
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllUser();
+        roles = dbContext.AspNetRoles.ToList();
+    }
+    protected async Task Eliminar(string id)
+    {
+        await UserService.DeleteUser(id);
+        users = null;
+        users = await UserService.GetAllUser();
+    }
+}

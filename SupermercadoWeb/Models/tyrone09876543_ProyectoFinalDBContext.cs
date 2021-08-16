@@ -159,13 +159,6 @@ namespace SupermercadoWeb.Models
 
             modelBuilder.Entity<Pedido>(entity =>
             {
-                entity.Property(e => e.Nombre)
-                    .IsRequired()
-                    .HasMaxLength(50);
-            });
-
-            modelBuilder.Entity<Pedido>(entity =>
-            {
                 entity.Property(e => e.Comentario)
                     .HasMaxLength(200)
                     .IsFixedLength(true);

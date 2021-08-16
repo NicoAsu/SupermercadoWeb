@@ -45,6 +45,7 @@ namespace SupermercadoWeb
             services.AddSingleton<WeatherForecastService>();
 
             services.AddScoped<IProductsService, ProductsService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddDbContext<tyrone09876543_ProyectoFinalDBContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
