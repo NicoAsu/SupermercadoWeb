@@ -8,6 +8,7 @@ namespace SupermercadoWeb.Services
     {
         Task<bool> DeleteUser(string id);
         Task<IEnumerable<AspNetUser>> GetAllUser();
+        Task<IEnumerable<AspNetRole>> GetAllRoles();
         Task<AspNetUser> GetUser(int id);
         Task<bool> UpdateUser(AspNetUser user);
     }

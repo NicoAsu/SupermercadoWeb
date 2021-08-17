@@ -1,0 +1,110 @@
+﻿@page "/Config/AddRoles"
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity.EntityFrameworkCore
+@using Data
+
+<h3>Lista de Roles</h3>
+<EditForm Model="@role" OnValidSubmit="CrearRole">
+    <DataAnnotationsValidator />
+    <div class="form-horizontal">
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Nombre del Role:</label>
+            <div class="col-md-10">
+                <InputText type="text" class="form-control" @bind-Value="role.Name" placeholder="Ingrese el nombre del role" />
+                <ValidationMessage For="@(() => role.Name)" />
+                @if (message != "")
+                {
+                    <label>@message</label>
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-success">
+                    <i class="oi oi-plus"> Agregar Role</i>
+                </button>
+                @*<a class="btn btn-primary" href="/Config/ListProduct">Regresar a la lista</a>*@
+            </div>
+        </div>
+    </div>
+</EditForm>
+<br />
+@if (netRoles == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead class="thead-dark">
+            <tr style="text-align:center;">
+                <th scope="col">Nombre</th>
+                <th scope="col">NormalizedName</th>
+                <th scope="col">Concurrency Stamp</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in netRoles)
+            {
+                <tr style="text-align:center;">
+                    <td>@role.Name</td>
+                    <td>@role.NormalizedName</td>
+                    <td>@role.ConcurrencyStamp</td>
+                    <td>
+                        <a href="/Config/EditRole/@role.Id" class="btn btn-primary btn-xs" title="Editar">
+                            <i class="oi oi-pencil"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+
+    private AspNetRole role = new AspNetRole();
+    private IEnumerable<AspNetRole> netRoles { get; set; }
+    string message = "";
+    bool nuevo = false;
+    protected async override Task OnInitializedAsync()
+    {
+        netRoles = await UserService.GetAllRoles();
+    }
+    protected async Task CrearRole()
+    {
+
+        var roleStore = new RoleStore<IdentityRole>(appContext);
+        var roleManager = new RoleManager<IdentityRole>(roleStore, null, null, null, null);
+        foreach (var item in netRoles)
+        {
+
+            if (item.Name == role.Name)
+            {
+                nuevo = false;
+                break;
+            }
+            else
+            {
+                nuevo = true;
+            }
+        }
+
+        if (nuevo == true)
+        {
+            await roleManager.CreateAsync(new IdentityRole { Name = role.Name });
+            netRoles = null;
+            netRoles = await UserService.GetAllRoles();
+            message = "";
+            nuevo = false;
+        }
+        else
+        {
+            message = "Este Role ya existe";
+            role.Name = "";
+        }
+    }
+}
+

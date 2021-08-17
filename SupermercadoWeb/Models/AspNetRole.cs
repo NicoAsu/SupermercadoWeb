@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 #nullable disable
 
@@ -14,6 +15,7 @@ namespace SupermercadoWeb.Models
         }
 
         public string Id { get; set; }
+        [Required(ErrorMessage ="Tiene que escribir el nombre del Role")]
         public string Name { get; set; }
         public string NormalizedName { get; set; }
         public string ConcurrencyStamp { get; set; }
