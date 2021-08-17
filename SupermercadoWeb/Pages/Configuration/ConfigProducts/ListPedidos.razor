@@ -2,15 +2,23 @@
 @using Radzen
 @using Radzen.Blazor
 <h3>Lista de pedidos</h3>
-<label>Filtrar por: </label>
-<select  @onchange="actualizar"  class="form-control">
+<label>Filtrar por estado: </label>
+<select  @bind="filtro" class="form-control">
     <option value="0"selected="selected">Todos</option>
     <option value="1">Proceso</option>
     <option value="2">Enviados</option>
     <option value="3">Completados</option>
 </select>
 <br />
-@if (pedidos.Count < 0)
+<button class="btn btn-primary" @onclick="actualizar">Filtrar</button>
+<br />
+<label>Buscar Id: </label>
+<input type="number" @bind="Id"/>
+<br />
+<button class="btn btn-primary" @onclick="buscar">Buscar</button>
+<br />
+<br />
+@if (cargando)
 {
     <p><em>Cargando...</em></p>
 }
@@ -18,8 +26,7 @@ else
 {
     <div class="row">
         <div class="col-x1-6">
-            <RadzenGoogleMap Style="height: 400px; width: 600px; " zoom="@zoom" Center="@(new GoogleMapPosition() {Lat = pedidos.FirstOrDefault().Latitud,
-                                                                         Lng = pedidos.FirstOrDefault().Longitud})">
+            <RadzenGoogleMap Style="height: 400px; width: 600px; " zoom="@zoom" Center="@(new GoogleMapPosition() {Lat = 0, Lng = 0})">
                 <Markers>
                     @foreach (var pedido in pedidos)
                     {
@@ -29,12 +36,6 @@ else
             </RadzenGoogleMap>
         </div>
     </div>
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
     <br />
     <br />
     <br />
@@ -52,16 +53,15 @@ else
             @foreach (var pedido in pedidos)
             {
                 <tr style="text-align:center;">
-                    <td></td>
                     <td>@pedido.Id</td>
                     <td>@pedido.UserId</td>
                     <td>@pedido.PrecioTotal</td>
                     <td>@pedido.Estado</td>
                     <td>
-                        <a href="/Config/EditProducts/@pedido.Id" class="btn btn-primary btn-xs" title="Editar">
+                        <a href="/Config/EditPedidos/@pedido.Id" class="btn btn-primary btn-xs" title="Editar">
                             <i class="oi oi-pencil"></i>
                         </a>
-                        <a href="/Config/DeleteProducts/@pedido.Id" class="btn btn-danger btn-xs" title="Detalles">
+                        <a href="/Config/DetailsPedidos/@pedido.Id" class="btn btn-danger btn-xs" title="Detalles">
                             detalles
                         </a>
                     </td>
@@ -74,9 +74,11 @@ else
     string filtro = "0";
     double zoom = 3;
     List<Pedido> pedidos;
-
+    bool cargando = true;
+    int Id = 0;
     void actualizar()
     {
+        cargando = true;
         switch (filtro)
         {
             case "1":
@@ -92,9 +94,15 @@ else
                 pedidos = dbContext.Pedidos.ToList();
                 break;
         }
+        cargando = false;
+    }
+    void buscar()
+    {
+        pedidos = dbContext.Pedidos.Where(x => x.Id == Id).ToList();
     }
     protected override void OnInitialized()
     {
         pedidos = dbContext.Pedidos.ToList();
+        cargando = false;
     }
 }
