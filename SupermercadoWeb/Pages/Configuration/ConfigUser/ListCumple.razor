@@ -1,0 +1,39 @@
+﻿@page "/Config/ListCumple"
+@using System.Text;
+<h3>Lista por cumpleaños</h3>
+<table class="table">
+    <thead class="thead-dark">
+        <tr style="text-align:center;">
+            <th scope="col">Nombre</th>
+            <th scope="col">Fecha de nacimiento</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pedido in pedidos)
+        {
+            <tr style="text-align:center;">
+                <td>@pedido.Id</td>
+                <td>@pedido.Estado</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a class="btn btn-primary" download="Cumples.csv" href="@getCsvUrl()">Exportar a csv</a>
+@code {
+    List<Pedido> pedidos;
+    protected override void OnInitialized()
+    {
+        pedidos = dbContext.Pedidos.ToList();
+    }
+    string getCsvUrl()
+    {
+        string csvString = "Nombre, Fecha_Nacimiento";
+        foreach (Pedido pedido in pedidos)
+        {
+            csvString += $"\n{pedido.Id},{pedido.Estado}";
+        }
+        byte[] csvBytes = Encoding.ASCII.GetBytes(csvString);
+        string csvUrl = $"data:text/csv; base64,{Convert.ToBase64String(csvBytes)}";
+        return csvUrl;
+    }
+}
