@@ -1,4 +1,4 @@
-﻿@page "/Config/AddCategorias"
+﻿@page "/Config/EditCategorias/{id:int}"
 @inject IJSRuntime JsRuntime
 <h3>AddCategorias</h3>
 <EditForm Model="@categoria" OnValidSubmit="Save">
@@ -15,19 +15,23 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-success">
-                    <i class="oi oi-plus"> Agragar categoría</i>
+                    <i class="oi oi-plus"> Editar categoria</i>
                 </button>
-
             </div>
         </div>
     </div>
 </EditForm>
 @code {
-    Categoria categoria = new Categoria();
+    [Parameter]
+    public int id { get; set; }
+    Categoria categoria;
     async Task Save()
     {
-        await dbContext.Categorias.AddAsync(categoria);
         await dbContext.SaveChangesAsync();
-        await JsRuntime.InvokeVoidAsync("alert", "Categoria agregada");
+        await JsRuntime.InvokeVoidAsync("alert", "Categoria editada correctamente");
+    }
+    protected override void OnInitialized()
+    {
+        categoria = dbContext.Categorias.Find(id);
     }
 }
