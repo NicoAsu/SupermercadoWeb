@@ -1,5 +1,6 @@
 ﻿@page "/Config/AddProducts"
-<h3>Add Products</h3>
+@inject IJSRuntime JsRuntime
+<h3>Agregar productos</h3>
 
 <EditForm Model="@producto" OnValidSubmit="Save">
     <DataAnnotationsValidator />
@@ -55,13 +56,13 @@
             }
         </div>
 
-        
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-success">
                     <i class="oi oi-plus"> Agragar Producto</i>
                 </button>
-                <a class="btn btn-primary" href="/Config/ListProduct">Regresar a la lista</a>
+
             </div>
         </div>
     </div>
@@ -92,6 +93,6 @@
     protected async Task Save()
     {
         await ProductsService.InsertProduct(producto);
-        NavigationManager.NavigateTo("/Config/ListProduct");
+        await JsRuntime.InvokeVoidAsync("alert", "Producto agregado");
     }
 }
