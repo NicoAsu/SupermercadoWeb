@@ -1,7 +1,7 @@
-﻿@page "/Config/AddSlider"
+﻿@page "/Config/EditSlider/{id:int}"
 @inject IJSRuntime JsRuntime
-<h3>Agregar item al Slider</h3>
-<br /> 
+<h3>Editar item al Slider</h3>
+<br />
 <h5>Agregue un video o una imagen</h5>
 <EditForm Model="@slider" OnValidSubmit="Save">
     <DataAnnotationsValidator />
@@ -35,13 +35,15 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-success">
-                    <i class="oi oi-plus"> Agragar al Slider</i>
+                    <i class="oi oi-plus"> Editar</i>
                 </button>
             </div>
         </div>
     </div>
 </EditForm>
 @code {
+    [Parameter]
+    public int id { get; set; }
     Slider slider = new Slider();
     string imageUrl = null;
     async Task HandleFileSelected(InputFileChangeEventArgs e)
@@ -57,10 +59,13 @@
             imageUrl = $"data:image/jpg; base64,{Convert.ToBase64String(buffer)}";
         }
     }
+    protected override void OnInitialized()
+    {
+        slider = dbContext.Sliders.Find(id);
+    }
     protected async Task Save()
     {
-        await dbContext.AddAsync(slider);
         await dbContext.SaveChangesAsync();
-        await JsRuntime.InvokeVoidAsync("alert", "Item agregado al slider");
+        await JsRuntime.InvokeVoidAsync("alert", "Item editado");
     }
 }
