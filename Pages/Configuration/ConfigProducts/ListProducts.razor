@@ -1,0 +1,50 @@
+﻿@page "/Config/ListProduct"
+<h3>ListProducts</h3>
+@if (productos == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Precio</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Cantidad</th>
+                <th scope="col">Foto</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in productos)
+            {
+                <tr>
+                    <td>@producto.Nombre</td>
+                    <td>@producto.Precio</td>
+                    
+                    <td>@producto.Cantidad</td>
+                    <td><img src="@producto.Imagen" alt="Alternate Text" /></td>
+                    <td>
+                        <a href="/Config/EditProducts/@producto.Id" class="btn btn-primary btn-xs" title="Editar">
+                            <i class="oi oi-pencil"></i>
+                        </a>
+
+                        <a href="/Config/DeleteProducts/@producto.Id" class="btn btn-danger btn-xs" title="Eliminar">
+                            <i class="oi oi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private IEnumerable<Producto> productos { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        productos = await ProductsService.GetAllProducts();
+    }
+}
