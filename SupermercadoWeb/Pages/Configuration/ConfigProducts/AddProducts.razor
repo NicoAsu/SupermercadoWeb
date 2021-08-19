@@ -93,6 +93,7 @@
     protected async Task Save()
     {
         await ProductsService.InsertProduct(producto);
+        producto = new Producto();
         await JsRuntime.InvokeVoidAsync("alert", "Producto agregado");
     }
 }

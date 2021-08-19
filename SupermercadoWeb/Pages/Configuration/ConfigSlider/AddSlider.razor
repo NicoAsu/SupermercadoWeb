@@ -61,6 +61,7 @@
     {
         await dbContext.AddAsync(slider);
         await dbContext.SaveChangesAsync();
+        slider = new Slider();
         await JsRuntime.InvokeVoidAsync("alert", "Item agregado al slider");
     }
 }

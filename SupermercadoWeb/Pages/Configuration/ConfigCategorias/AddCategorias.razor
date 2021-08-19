@@ -28,6 +28,7 @@
     {
         await dbContext.Categorias.AddAsync(categoria);
         await dbContext.SaveChangesAsync();
+        categoria = new Categoria();
         await JsRuntime.InvokeVoidAsync("alert", "Categoria agregada");
     }
 }
