@@ -75,7 +75,7 @@ else
     private IEnumerable<Producto> productos { get; set; }
     List<Categoria> categorias = new List<Categoria>();
     List<string> segunda;
-    async Task actualizar()
+    void actualizar()
     {
         productos = dbContext.Productos.Where(x => x.CategoriaId == filtro).ToList();
     }
