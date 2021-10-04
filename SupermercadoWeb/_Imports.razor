@@ -10,9 +10,11 @@
 @using SupermercadoWeb.Shared
 @using System.IO;
 @using Models
+@using Data
 @inject tyrone09876543_ProyectoFinalDBContext dbContext
+@inject ApplicationDbContext appContext
 
 @using Services
 @inject IProductsService ProductsService
+@inject IUserService UserService
 @inject NavigationManager NavigationManager
-

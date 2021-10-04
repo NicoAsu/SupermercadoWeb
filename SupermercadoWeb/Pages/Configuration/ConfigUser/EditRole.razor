@@ -1,0 +1,58 @@
+﻿@page "/Config/EditRole/{id}"
+@using Microsoft.EntityFrameworkCore
+@attribute [Authorize(Roles ="Administrator")]
+<h3>Editar Datos del Roles</h3>
+
+<AuthorizeView Roles="Administrator">
+    <Authorized Context="Auth">
+        <EditForm Model="@role" OnValidSubmit="Editar">
+            <DataAnnotationsValidator />
+            <div class="form-horizontal">
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Nombre del Role:</label>
+                    <div class="col-md-10">
+                        <InputText type="text" class="form-control" @bind-Value="role.Name" placeholder="Ingrese el nombre del role" />
+                        <ValidationMessage For="@(() => role.Name)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-success">
+                            <i class="oi oi-plus"> Actualizar Role</i>
+                        </button>
+                        @*<a class="btn btn-primary" href="/Config/ListProduct">Regresar a la lista</a>*@
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <label>Solo los administradores pueden usar esta función</label>
+        <br />
+        <a href="/Config/AddRoles" class="btn btn-primary">
+            <i class="oi arrow-thick-left"> Regresar a la lista</i>
+        </a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+
+    private AspNetRole role = new AspNetRole();
+    protected override async Task OnInitializedAsync()
+    {
+        role = await dbContext.AspNetRoles.FindAsync(id);
+    }
+
+    protected async Task Editar()
+    {
+        dbContext.Entry(role).State = EntityState.Modified;
+        await dbContext.SaveChangesAsync();
+        NavigationManager.NavigateTo("/Config/AddRoles");
+    }
+
+
+}

@@ -8,7 +8,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Nombre:</label>
             <div class="col-md-10">
-                <input type="text" class="form-control" @bind="producto.Nombre" placeholder="Ingrese el nombre del producto" />
+                <InputText type="text" class="form-control" @bind-Value="producto.Nombre" placeholder="Ingrese el nombre del producto" />
                 <ValidationMessage For="@(() => producto.Nombre)" />
             </div>
         </div>
@@ -16,7 +16,7 @@
         <div class="form-group">
             <label class="control-label col-md-2">Precio:</label>
             <div class="col-md-10">
-                <input type="number" class="form-control" @bind="producto.Precio" placeholder="Ingrese el precio" />
+                <InputNumber type="number" class="form-control" @bind-Value="producto.Precio" placeholder="Ingrese el precio" />
                 <ValidationMessage For="@(() => producto.Precio)" />
             </div>
         </div>
@@ -24,21 +24,21 @@
         <div class="form-group">
             <label class="control-label col-md-2">Categoria:</label>
             <div class="col-md-10">
-                <input type="text" class="form-control" placeholder="Ingrese la Categoria" />
-                <select>
-                    <option value="" selected="selected" disabled="disabled">-- Selecciona una cateogria --</option>
-                    @foreach(var categoria in categorias)
+                <InputSelect @bind-Value="producto.CategoriaId" class="form-control">
+                    <option value="0" selected disabled hidden>-- Selecciona una cateogria --</option>
+                    @foreach (var categoria in categorias)
                     {
                         <option value="@categoria.Id">@categoria.Nombre</option>
                     }
-                </select>
+                </InputSelect>
+                <ValidationMessage For="@(() => producto.CategoriaId)" />
             </div>
         </div>
 
         <div class="form-group">
             <label class="control-label col-md-2">Cantidad:</label>
             <div class="col-md-10">
-                <input type="number" class="form-control" @bind="producto.Cantidad" />
+                <InputNumber class="form-control" @bind-Value="producto.Cantidad" />
                 <ValidationMessage For="@(() => producto.Cantidad)" />
             </div>
         </div>
@@ -46,14 +46,16 @@
         <div class="form-group">
             <label class="control-label col-md-2">Imagen:</label>
             <div class="col-md-10">
-                <InputFile accept="png, jpeg, jpg"OnChange="HandleFileSelected"></InputFile>
+                <InputFile accept="png, jpeg, jpg" OnChange="HandleFileSelected"></InputFile>
+                <ValidationMessage For="@(() => producto.Imagen)" />
             </div>
+            @if (imageUrl != null)
+            {
+                <img src="@imageUrl" width="200" height="200">
+            }
         </div>
 
-        @if(imageUrl != null)
-        {
-            <img src="@imageUrl">
-        }
+        
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-success">
@@ -69,7 +71,6 @@
 @code {
     private Producto producto = new Producto();
     List<Categoria> categorias = new List<Categoria>();
-    FileStream stream;
     string imageUrl = null;
     async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
@@ -81,7 +82,7 @@
             var buffer = new Byte[resized.Size];
             await resized.OpenReadStream().ReadAsync(buffer);
             producto.Imagen = buffer;
-            imageUrl = $"data:image / jpg; base64,{Convert.ToBase64String(buffer)}";
+            imageUrl = $"data:image/jpg; base64,{Convert.ToBase64String(buffer)}";
         }
     }
     protected override void OnInitialized()
@@ -90,9 +91,7 @@
     }
     protected async Task Save()
     {
-        /*await ProductsService.InsertProduct(producto);
+        await ProductsService.InsertProduct(producto);
         NavigationManager.NavigateTo("/Config/ListProduct");
-        stream = new FileStream(image, FileMode.Open, FileAccess.Read); */
-        await dbContext.Productos.AddAsync(producto);
     }
 }

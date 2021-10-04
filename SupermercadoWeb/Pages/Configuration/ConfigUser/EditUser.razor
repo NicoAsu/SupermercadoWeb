@@ -1,0 +1,122 @@
+﻿@page "/Config/EditUser/{id}"
+@using Microsoft.EntityFrameworkCore
+@using System.ComponentModel.DataAnnotations
+<h3>Editar Datos del Roles</h3>
+
+@*<AuthorizeView Roles="Administrator">
+    <Authorized Context="Auth">*@
+        <EditForm Model="@user" OnValidSubmit="Editar">
+            <DataAnnotationsValidator />
+            <div class="form-horizontal">
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Nombre de Usuario:</label>
+                    <div class="col-md-10">
+                        <InputText class="form-control" @bind-Value="user.UserName" placeholder="Ingrese el nombre de Usuario" />
+                        <ValidationMessage For="@(() => user.UserName)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Fecha de Nacimiento:</label>
+                    <div class="col-md-10">
+                        <InputDate class="form-control" @bind-Value="user.Fnacimiento" placeholder="Fecha de Nacimiento" />
+                        <ValidationMessage For="@(() => user.Fnacimiento)" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Numero de Telefono:</label>
+                    <div class="col-md-10">
+                        <InputText class="form-control" @bind-Value="user.PhoneNumber" placeholder="Ingrese Numero de Telefono" />
+                        <ValidationMessage For="@(() => user.PhoneNumber)" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">Roles De Usuario:</label>
+                    <div class="col-md-10">
+                        <InputSelect @bind-Value="selectRole" class="form-control">
+
+                            <option value="0" selected disabled hidden>-- Selecciona un Rol --</option>
+                            @foreach (var role in roles)
+                            {
+                                <option value="@role.Id">@role.Name</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => selectRole)" />
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <button type="submit" class="btn btn-success">
+                            <i class="oi oi-plus"> Actualizar Role</i>
+                        </button>
+                        @*<a class="btn btn-primary" href="/Config/ListProduct">Regresar a la lista</a>*@
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    @*</Authorized>
+    <NotAuthorized>*@
+        <label>Solo los administradores pueden usar esta función</label>
+        <br />
+        <a href="/Config/AddRoles" class="btn btn-primary">
+            <i class="oi arrow-thick-left"> Regresar a la lista</i>
+        </a>
+    @*</NotAuthorized>
+</AuthorizeView>*@
+
+@code {
+        [Parameter]
+        public string id { get; set; }
+        [Required(ErrorMessage = "Debe seleccionar uno de los Roles")]
+        string selectRole { get; set; }
+
+    private AspNetUser user = new AspNetUser();
+    private AspNetRole rol = new AspNetRole();
+    AspNetUserRole userrole = new AspNetUserRole();
+
+    List<AspNetRole> roles = new List<AspNetRole>();
+    List<AspNetUserRole> userRoles = new List<AspNetUserRole>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await dbContext.AspNetUsers.FindAsync(id);
+    }
+    protected override void OnInitialized()
+    {
+        roles = dbContext.AspNetRoles.ToList();
+        userRoles = dbContext.AspNetUserRoles.ToList();
+
+        foreach (var item in userRoles)
+        {
+            if (item.UserId == user.Id)
+            {
+                selectRole = item.RoleId;
+            }
+            else
+            {
+                selectRole = "";
+            }
+        }
+    }
+
+    protected async Task Editar()
+    {
+
+        userrole.RoleId = selectRole;
+        userrole.UserId = user.Id;
+        if (!userRoles.Contains(userrole))
+        {
+            dbContext.AspNetUserRoles.Add(userrole);
+            dbContext.SaveChanges();
+        }
+        dbContext.Entry(user).State = EntityState.Modified;
+        await dbContext.SaveChangesAsync();
+        NavigationManager.NavigateTo("/Config/ListUsers");
+    }
+
+
+}

@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 
 namespace SupermercadoWeb
 {
@@ -45,9 +46,14 @@ namespace SupermercadoWeb
             services.AddSingleton<WeatherForecastService>();
 
             services.AddScoped<IProductsService, ProductsService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddDbContext<tyrone09876543_ProyectoFinalDBContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
+         //   services.AddMvc();
+         //   services.Configure<RouteOptions>(options =>
+         //options.ConstraintMap.Add("nameId", typeof(NameIdRouteConstraint)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,7 +73,6 @@ namespace SupermercadoWeb
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
             app.UseAuthentication();
